@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <script src="http://code.jquery.com/jquery-2.0.0.min.js"></script>
+    <script src="http://a.vimeocdn.com/js/froogaloop2.min.js"></script>
+    </head>
+    <body>
+    <iframe src="http://player.vimeo.com/video/63218763?title=0&amp;byline=0&amp;portrait=0&amp;api=1&amp;html=1" width="500" height="281" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>
+    <script type="text/javascript">
+// PASO 3
+// PASO 3
+$.ajax({method: 'get', url: 'https://dl.dropboxusercontent.com/spa/x48bj6uu4nln9w3/yalp/public/vimeo4yalp/2608732.srt', success: parseSubtitles});
+// PASO 4
+// PASO 4
+var subtitles = [] 
+function parseSubtitles(srt) 
+{ 
+   var records = srt.replace(/(\r\n|\r|\n)/g, '\n').split('\n\n') 
+   var r = 0 
+   $(records).each(function(i) 
+   { 
+     subtitles[r] = [] 
+     return (subtitles[r++] = records[i].split('\n')) 
+   }) 
+};
+// PASO 5
+// PASO 5
+var vimeoPlayer = $('iframe').first() 
+Froogaloop(vimeoPlayer).addEvent('playProgress', onPlayProgress);
+// PASO 6
+// PASO 6
+    var subcount = 0 
+
+function onPlayProgress(data) 
+{ 
+   var subtitle = '' 
+   var seconds = Number(data.seconds).toFixed(1) 
+   var min = timecodeFrom(subtitles[subcount][1]) 
+   var max = timecodeTo(subtitles[subcount][1]) 
+
+   if (seconds > min && seconds < max) subtitle = subtitles[subcount][2] 
+   if (seconds > max && subcount < (subtitles.length - 1)) subcount++ 
+
+   $('#subtitles').html(subtitle) 
+};
+function timecodeFrom(timecode) 
+{
+   var timecodePair = timecode.split(' —> ') 
+   return timecodeSeconds(timecodePair[0]) 
+}; 
+function timecodeTo(timecode) 
+{ 
+   var timecodePair = timecode.split(' —> ') 
+   return timecodeSeconds(timecodePair[1]) 
+};
+function timecodeSeconds(timecode) 
+{ 
+   var secs, timecode1, timecode2 
+   timecode1 = timecode.split(',') 
+   timecode2 = timecode1[0].split(':') 
+   return (secs = Math.floor(timecode2[0] * 60 * 60) + Math.floor(timecode2[1] * 60) + Math.floor(timecode2[2])) 
+};
+</script>
+    </body>
+</html><!--15-->
